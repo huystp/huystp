@@ -131,38 +131,39 @@ def generate(grid):
               f'</rect>')
 
     # ── Grim Reaper (drawn centred at 0,0; translated by animateTransform) ──
+    reaper_drawing = []
+    r = reaper_drawing.append
     # Robe
-    a('<polygon points="-4,8 4,8 3,-1 -3,-1" fill="#1a1a2e" stroke="#444" stroke-width="0.5"/>')
+    r('<polygon points="-4,8 4,8 3,-1 -3,-1" fill="#1a1a2e" stroke="#444" stroke-width="0.5"/>')
     # Hood
-    a('<polygon points="0,-12 -6,-1 6,-1" fill="#111" stroke="#444" stroke-width="0.5"/>')
+    r('<polygon points="0,-12 -6,-1 6,-1" fill="#111" stroke="#444" stroke-width="0.5"/>')
     # Scythe handle
-    a('<line x1="3" y1="-9" x2="7" y2="8" stroke="#999" stroke-width="1.2" stroke-linecap="round"/>')
+    r('<line x1="3" y1="-9" x2="7" y2="8" stroke="#999" stroke-width="1.2" stroke-linecap="round"/>')
     # Scythe blade (static curve)
-    a('<path d="M3,-9 Q-6,-17 -4,-4" stroke="#cc2222" stroke-width="2.0" fill="none" stroke-linecap="round"/>')
+    r('<path d="M3,-9 Q-6,-17 -4,-4" stroke="#cc2222" stroke-width="2.0" fill="none" stroke-linecap="round"/>')
     # Eye glow with pulse
-    a('<circle cx="0" cy="-5" r="1.4" fill="#ff3300">'
+    r('<circle cx="0" cy="-5" r="1.4" fill="#ff3300">'
       '<animate attributeName="opacity" values="0.6;1;0.6" dur="0.8s" repeatCount="indefinite"/>'
       '</circle>')
     # Slash flash line (flickers at FRAME_DUR rate, same as movement)
-    a(f'<line x1="-9" y1="-3" x2="9" y2="5" stroke="#ff3300" stroke-width="1.4" '
+    r(f'<line x1="-9" y1="-3" x2="9" y2="5" stroke="#ff3300" stroke-width="1.4" '
       f'stroke-linecap="round">'
       f'<animate attributeName="opacity" values="0;1;0" '
       f'keyTimes="0;0.08;0.45" dur="{fmt(FRAME_DUR)}" repeatCount="indefinite"/>'
       f'</line>')
 
-    # The translation that drives all of the above
-    a(f'<animateTransform attributeName="transform" type="translate" '
-      f'calcMode="discrete" '
-      f'values="{";".join(pos_v)}" '
-      f'keyTimes="{";".join(kts)}" '
-      f'dur="{dur}" repeatCount="indefinite"/>')
+    # Wrap the drawing in a scale transform
+    scaled_reaper = '<g transform="scale(3.5)">\n' + "\n".join(reaper_drawing) + '\n</g>'
 
-    # Wrap everything reaper-related in a single <g>
-    reaper_start = out.index(
-        '<polygon points="-4,8 4,8 3,-1 -3,-1" fill="#1a1a2e" stroke="#444" stroke-width="0.5"/>')
-    reaper_parts  = out[reaper_start:]
-    out           = out[:reaper_start]
-    out.append('<g>' + "".join(reaper_parts) + '</g>')
+    # The translation that drives the movement
+    anim = (f'<animateTransform attributeName="transform" type="translate" '
+            f'calcMode="discrete" '
+            f'values="{";".join(pos_v)}" '
+            f'keyTimes="{";".join(kts)}" '
+            f'dur="{dur}" repeatCount="indefinite"/>')
+
+    # Add the outer group to the main output
+    a('<g>\n' + anim + '\n' + scaled_reaper + '\n</g>')
 
     body = "\n  ".join(out)
     return (f'<svg xmlns="http://www.w3.org/2000/svg" '
