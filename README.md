@@ -37,21 +37,11 @@
 
 <br/>
 
-### ☠️ Tử Thần Hủy Diệt Contribution
-
-> *"Tử thần vung lưỡi hái, chém nát những khối vuông xanh của sự lười biếng!"*
-
 <div align="center">
-  <img
-    src="https://raw.githubusercontent.com/huystp/huystp/output/github-contribution-grid-reaper.svg"
-    alt="Grim Reaper slashing the contribution graph"
-    width="100%"
-  />
+  <img src="./img/grim_reaper.png" width="600" alt="Grim Reaper Slashing GitHub Graph"/>
 </div>
 
 <br/>
-
-### 🐍 Rắn Săn Mồi
 
 <div align="center">
   <picture>
