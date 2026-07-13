@@ -130,30 +130,35 @@ def generate(grid):
               f'dur="{dur}" repeatCount="indefinite"/>'
               f'</rect>')
 
-    # ── Grim Reaper (drawn centred at 0,0; translated by animateTransform) ──
-    reaper_drawing = []
-    r = reaper_drawing.append
-    # Robe
-    r('<polygon points="-4,8 4,8 3,-1 -3,-1" fill="#1a1a2e" stroke="#444" stroke-width="0.5"/>')
-    # Hood
-    r('<polygon points="0,-12 -6,-1 6,-1" fill="#111" stroke="#444" stroke-width="0.5"/>')
-    # Scythe handle
-    r('<line x1="3" y1="-9" x2="7" y2="8" stroke="#999" stroke-width="1.2" stroke-linecap="round"/>')
-    # Scythe blade (static curve)
-    r('<path d="M3,-9 Q-6,-17 -4,-4" stroke="#cc2222" stroke-width="2.0" fill="none" stroke-linecap="round"/>')
-    # Eye glow with pulse
-    r('<circle cx="0" cy="-5" r="1.4" fill="#ff3300">'
-      '<animate attributeName="opacity" values="0.6;1;0.6" dur="0.8s" repeatCount="indefinite"/>'
-      '</circle>')
+    # ── Grim Reaper (Image) ──
+    # Dynamically load the image and embed it
+    import base64
+    img_path = os.path.join(os.path.dirname(__file__), "..", "..", "img", "grim_reaper.png")
+    try:
+        with open(img_path, "rb") as img_file:
+            b64_data = base64.b64encode(img_file.read()).decode("utf-8")
+        img_href = f"data:image/png;base64,{b64_data}"
+    except Exception as e:
+        print(f"[warn] Could not load reaper image: {e}")
+        img_href = ""
+    
+    # We want the image to be centered and nicely sized over the squares
+    # Original image is large, let's display it at 40x40 pixels, centered at (0,0)
+    reaper_drawing = [
+        f'<image href="{img_href}" x="-20" y="-20" width="40" height="40"/>'
+    ]
+
     # Slash flash line (flickers at FRAME_DUR rate, same as movement)
-    r(f'<line x1="-9" y1="-3" x2="9" y2="5" stroke="#ff3300" stroke-width="1.4" '
+    reaper_drawing.append(
+      f'<line x1="-15" y1="-5" x2="15" y2="10" stroke="#00ff00" stroke-width="2.5" '
       f'stroke-linecap="round">'
       f'<animate attributeName="opacity" values="0;1;0" '
       f'keyTimes="0;0.08;0.45" dur="{fmt(FRAME_DUR)}" repeatCount="indefinite"/>'
-      f'</line>')
+      f'</line>'
+    )
 
-    # Wrap the drawing in a scale transform
-    scaled_reaper = '<g transform="scale(3.5)">\n' + "\n".join(reaper_drawing) + '\n</g>'
+    # Wrap the drawing in a small scale/offset if needed, but x/y -20 centers it
+    scaled_reaper = '<g>\n' + "\n".join(reaper_drawing) + '\n</g>'
 
     # The translation that drives the movement
     anim = (f'<animateTransform attributeName="transform" type="translate" '
