@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
 SMIL-animated Grim Reaper SVG for GitHub contribution graph.
-Pure SVG/SMIL - no JavaScript - works in GitHub README img tags.
+Pixel-art character drawn with pure SVG rects - no JS, no external images.
+Character hunts green contribution cells like a snake.
 """
-import json, os, sys, urllib.request
+import json, os, sys, urllib.request, random
 from datetime import datetime, timedelta
 
 USERNAME  = os.environ.get("GITHUB_USER", "huystp")
@@ -11,22 +12,59 @@ TOKEN     = os.environ.get("GITHUB_TOKEN", "")
 
 CELL      = 11
 GAP       = 3
-STEP      = CELL + GAP        # 14 px
+STEP      = CELL + GAP
 WEEKS     = 53
 DAYS      = 7
 PAD_LEFT  = 28
 HEADER_H  = 26
-FRAME_DUR = 0.12              # seconds per cell
+FRAME_DUR = 0.14   # seconds per step
 
 BG        = "#0d1117"
 COLORS    = ["#161b22","#0e4429","#006d32","#26a641","#39d353"]
-SLASHED   = ["#200000","#1a1000","#091a00","#122000","#0a2a08"]
+SLASHED   = ["#1a0000","#1a1000","#091500","#102000","#082208"]
 TXT       = "#8b949e"
 BORDER    = "#21262d"
 
+# ── Pixel-art Grim Reaper  (12 cols × 18 rows, 0 = transparent) ──────────────
+P = {
+    1: "#130820",   # darkest purple shadow
+    2: "#3b1468",   # dark purple robe
+    3: "#5c2e9c",   # medium purple highlight
+    4: "#c8c8d0",   # skull gray-white
+    5: "#ff2200",   # red glowing eyes
+    6: "#5c3a1e",   # scythe handle brown
+    7: "#4477bb",   # scythe blade blue
+    8: "#88bbee",   # scythe blade shine
+    9: "#0a0a0a",   # near-black
+}
+SPRITE = [
+    [0,0,8,7,7,6,0,0,0,0,0,0],
+    [0,8,7,7,6,2,2,2,0,0,0,0],
+    [0,0,8,6,2,2,2,2,2,0,0,0],
+    [0,0,6,6,2,4,4,4,2,2,0,0],
+    [0,0,0,6,2,4,5,4,5,4,2,0],
+    [0,0,0,0,2,4,4,9,4,4,2,0],
+    [0,0,0,0,2,2,4,4,4,2,2,0],
+    [0,0,0,1,2,2,2,2,2,2,3,0],
+    [0,0,1,2,2,2,2,2,2,3,3,0],
+    [0,1,2,2,2,2,2,2,3,3,0,0],
+    [1,2,2,2,2,0,2,2,2,3,0,0],
+    [2,2,2,2,0,0,0,2,2,3,0,0],
+    [0,2,2,1,0,0,0,0,2,2,0,0],
+    [0,0,2,1,0,0,0,0,1,2,0,0],
+    [0,0,2,1,0,0,0,0,1,2,0,0],
+    [0,0,2,2,1,0,0,1,2,2,0,0],
+    [0,1,2,2,2,0,1,2,2,2,0,0],
+    [0,0,1,1,0,0,0,1,1,0,0,0],
+]
+PX    = 3                              # pixels per sprite pixel
+SP_W  = len(SPRITE[0]) * PX           # 36
+SP_H  = len(SPRITE)    * PX           # 54
+HW    = SP_W // 2
+HH    = SP_H // 2
+
 
 # ── GitHub API ────────────────────────────────────────────────────────────────
-
 def fetch_contributions():
     q = """query($l:String!){user(login:$l){contributionsCollection{
            contributionCalendar{weeks{contributionDays{contributionCount}}}}}}"""
@@ -39,8 +77,8 @@ def fetch_contributions():
     try:
         with urllib.request.urlopen(req, timeout=15) as r:
             data = json.loads(r.read())
-        weeks = data["data"]["user"]["contributionsCollection"] \
-                    ["contributionCalendar"]["weeks"]
+        weeks = (data["data"]["user"]["contributionsCollection"]
+                     ["contributionCalendar"]["weeks"])
         grid = []
         for w in weeks:
             col = [d["contributionCount"] for d in w["contributionDays"]]
@@ -50,7 +88,7 @@ def fetch_contributions():
         return grid[:WEEKS]
     except Exception as e:
         print(f"[warn] {e} — using demo data")
-        import random; random.seed(42)
+        random.seed(77)
         return [[random.choices([0,1,2,5,10],[40,20,20,12,8])[0]
                  for _ in range(DAYS)] for _ in range(WEEKS)]
 
@@ -68,66 +106,70 @@ def center(w, d):
 def fmt(s): return f"{s:.4f}s"
 
 
-# ── SVG generation ────────────────────────────────────────────────────────────
+# ── Pathfinding (hunts green cells like a snake) ──────────────────────────────
+def build_path(grid):
+    """Greedy nearest-neighbor: hunt every green cell, step by step."""
+    green = {(w, d) for w in range(len(grid))
+             for d in range(DAYS) if grid[w][d] > 0}
 
+    random.seed(42)
+    path  = []
+    curr  = (0, 3)   # start near left-middle
+
+    while green:
+        # nearest green cell (Manhattan)
+        tgt = min(green, key=lambda t: abs(t[0]-curr[0]) + abs(t[1]-curr[1]))
+        # walk toward target one step at a time
+        while curr != tgt:
+            w, d   = curr
+            tw, td = tgt
+            moves  = []
+            if w < tw: moves.append((w+1, d))
+            if w > tw: moves.append((w-1, d))
+            if d < td: moves.append((w, d+1))
+            if d > td: moves.append((w, d-1))
+            # small random chance to juke sideways (organic look)
+            if random.random() < 0.25:
+                moves = [random.choice(moves)]
+            curr = random.choice(moves)
+            path.append(curr)
+        green.discard(tgt)
+
+    return path if path else [(w, 0) for w in range(WEEKS)]
+
+
+# ── Sprite SVG builder ────────────────────────────────────────────────────────
+def sprite_svg():
+    parts = []
+    for ri, row in enumerate(SPRITE):
+        for ci, code in enumerate(row):
+            if code == 0: continue
+            x = ci * PX - HW
+            y = ri * PX - HH
+            parts.append(f'<rect x="{x}" y="{y}" width="{PX}" height="{PX}" fill="{P[code]}"/>')
+    return "\n".join(parts)
+
+
+# ── Main SVG generation ───────────────────────────────────────────────────────
 def generate(grid):
     W = PAD_LEFT + WEEKS*STEP + 4
     H = HEADER_H + DAYS*STEP  + 4
 
-    # Traversal order: Dynamic pathfinding to green squares (like the snake)
-    targets = set((w, d) for w in range(len(grid)) for d in range(DAYS) if grid[w][d] > 0)
-    import random
-    random.seed(42)
-    
-    path = [(0, 0)]
-    curr = (0, 0)
-    
-    while targets:
-        # Find closest target (Manhattan distance)
-        best_t = None
-        best_dist = 999999
-        for t in targets:
-            dist = abs(t[0]-curr[0]) + abs(t[1]-curr[1])
-            if dist < best_dist:
-                best_dist = dist
-                best_t = t
-                
-        # move step by step to best_t
-        while curr != best_t:
-            w, d = curr
-            tw, td = best_t
-            moves = []
-            if w < tw: moves.append((1, 0))
-            if w > tw: moves.append((-1, 0))
-            if d < td: moves.append((0, 1))
-            if d > td: moves.append((0, -1))
-            
-            dw, dd = random.choice(moves)
-            curr = (w+dw, d+dd)
-            path.append(curr)
-            
-        targets.remove(best_t)
-
-    # if no targets, just do a simple walk
-    if len(path) == 1:
-        path = [(w, 0) for w in range(WEEKS)]
-
+    path = build_path(grid)
     n    = len(path)
     dur  = fmt(n * FRAME_DUR)
-    total_s = n * FRAME_DUR
 
-    # keyTimes for reaper position  (n+1 points, last wraps to start)
     kts   = [f"{i/n:.4f}" for i in range(n)] + ["1.0000"]
     pos_v = [f"{center(w,d)[0]},{center(w,d)[1]}" for (w,d) in path]
     pos_v.append(pos_v[0])
 
     out = []
-    a = out.append   # shorthand
+    a   = out.append
 
-    # ── Background ──────────────────────────────────────────────────────────
+    # Background
     a(f'<rect width="{W}" height="{H}" fill="{BG}" rx="6"/>')
 
-    # ── Month labels ─────────────────────────────────────────────────────────
+    # Month labels
     today = datetime.utcnow().date()
     start = today - timedelta(weeks=WEEKS)
     prev  = None
@@ -139,7 +181,7 @@ def generate(grid):
               f'{dt.strftime("%b")}</text>')
             prev = dt.month
 
-    # ── Day-of-week labels ───────────────────────────────────────────────────
+    # Day-of-week labels
     for i, name in enumerate(["","Mon","","Wed","","Fri",""]):
         if name:
             y = HEADER_H + i*STEP + CELL - 1
@@ -147,73 +189,55 @@ def generate(grid):
               f'font-size="8" font-family="monospace" text-anchor="end">'
               f'{name}</text>')
 
-    # ── Cells with SMIL colour animation ────────────────────────────────────
-    pos_idx = {}
+    # Contribution cells with slash animation
+    visited = {}
     for i, cell in enumerate(path):
-        if cell not in pos_idx:
-            pos_idx[cell] = i
-            
+        if cell not in visited:
+            visited[cell] = i
+
     for w, col in enumerate(grid):
         for d, cnt in enumerate(col):
-            x = PAD_LEFT + w*STEP
-            y = HEADER_H + d*STEP
+            x  = PAD_LEFT + w*STEP
+            y  = HEADER_H + d*STEP
             c0 = COLORS[lv(cnt)]
             c1 = SLASHED[lv(cnt)]
-            
-            if (w, d) in pos_idx:
-                fi = pos_idx[(w, d)] / n          # fraction when slashed
-                # 3-stop discrete: original → slashed → original (next loop)
-                kts_c = f"0;{fi:.4f};1.0000"
-                vals_c = f"{c0};{c1};{c0}"
+            if (w, d) in visited:
+                fi = visited[(w, d)] / n
                 a(f'<rect x="{x}" y="{y}" width="{CELL}" height="{CELL}" '
                   f'rx="2" fill="{c0}" stroke="{BORDER}" stroke-width="0.5">'
                   f'<animate attributeName="fill" calcMode="discrete" '
-                  f'values="{vals_c}" keyTimes="{kts_c}" '
+                  f'values="{c0};{c1};{c0}" keyTimes="0;{fi:.4f};1.0000" '
                   f'dur="{dur}" repeatCount="indefinite"/>'
                   f'</rect>')
             else:
                 a(f'<rect x="{x}" y="{y}" width="{CELL}" height="{CELL}" '
                   f'rx="2" fill="{c0}" stroke="{BORDER}" stroke-width="0.5"/>')
 
-    # ── Grim Reaper (Image) ──
-    # Dynamically load the image and embed it
-    import base64
-    img_path = os.path.join(os.path.dirname(__file__), "..", "..", "img", "reaper_pixel.png")
-    try:
-        with open(img_path, "rb") as img_file:
-            b64_data = base64.b64encode(img_file.read()).decode("utf-8")
-        img_href = f"data:image/png;base64,{b64_data}"
-    except Exception as e:
-        print(f"[warn] Could not load reaper image: {e}")
-        img_href = ""
-    
-    # We want the image to be centered and nicely sized over the squares
-    # Original image is large, let's display it at 40x40 pixels, centered at (0,0)
-    reaper_drawing = [
-        f'<image href="{img_href}" x="-20" y="-20" width="40" height="40"/>'
-    ]
+    # Grim Reaper — pixel art drawn as SVG rects
+    # Slash flash line (green, flickers on each step)
+    flash = (f'<line x1="-{HW+4}" y1="{HH//2}" x2="{HW+4}" y2="-{HH//2}" '
+             f'stroke="#00ff77" stroke-width="2.5" stroke-linecap="round">'
+             f'<animate attributeName="opacity" values="0;1;0" '
+             f'keyTimes="0;0.07;0.4" dur="{fmt(FRAME_DUR)}" repeatCount="indefinite"/>'
+             f'</line>')
 
-    # Slash flash line (flickers at FRAME_DUR rate, same as movement)
-    reaper_drawing.append(
-      f'<line x1="-15" y1="-5" x2="15" y2="10" stroke="#00ff00" stroke-width="2.5" '
-      f'stroke-linecap="round">'
-      f'<animate attributeName="opacity" values="0;1;0" '
-      f'keyTimes="0;0.08;0.45" dur="{fmt(FRAME_DUR)}" repeatCount="indefinite"/>'
-      f'</line>'
+    # Eye glow pulse (on top of sprite)
+    glow = ('<circle cx="0" cy="-10" r="3" fill="#ff2200" opacity="0">'
+            '<animate attributeName="opacity" values="0;0.6;0" '
+            'dur="0.8s" repeatCount="indefinite"/>'
+            '</circle>')
+
+    reaper_g = (
+        '<g>\n'
+        f'<animateTransform attributeName="transform" type="translate" '
+        f'calcMode="discrete" values="{";".join(pos_v)}" '
+        f'keyTimes="{";".join(kts)}" dur="{dur}" repeatCount="indefinite"/>\n'
+        + sprite_svg() + '\n'
+        + flash + '\n'
+        + glow + '\n'
+        '</g>'
     )
-
-    # Wrap the drawing in a small scale/offset if needed, but x/y -20 centers it
-    scaled_reaper = '<g>\n' + "\n".join(reaper_drawing) + '\n</g>'
-
-    # The translation that drives the movement
-    anim = (f'<animateTransform attributeName="transform" type="translate" '
-            f'calcMode="discrete" '
-            f'values="{";".join(pos_v)}" '
-            f'keyTimes="{";".join(kts)}" '
-            f'dur="{dur}" repeatCount="indefinite"/>')
-
-    # Add the outer group to the main output
-    a('<g>\n' + anim + '\n' + scaled_reaper + '\n</g>')
+    a(reaper_g)
 
     body = "\n  ".join(out)
     return (f'<svg xmlns="http://www.w3.org/2000/svg" '
@@ -222,15 +246,15 @@ def generate(grid):
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
-
 if __name__ == "__main__":
     out_path = sys.argv[1] if len(sys.argv) > 1 \
                else "dist/github-contribution-grid-reaper.svg"
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     print(f"[info] Fetching contributions for {USERNAME} …")
     grid = fetch_contributions()
-    print(f"[info] Building SVG ({WEEKS} weeks × {DAYS} days) …")
+    print(f"[info] Building SVG with pixel-art reaper …")
     svg = generate(grid)
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(svg)
-    print(f"[ok]  Saved → {out_path}")
+    size_kb = len(svg) // 1024
+    print(f"[ok]  Saved → {out_path}  ({size_kb} KB)")
