@@ -74,8 +74,44 @@ def generate(grid):
     W = PAD_LEFT + WEEKS*STEP + 4
     H = HEADER_H + DAYS*STEP  + 4
 
-    # Traversal order: column-by-column, top-to-bottom
-    path = [(w, d) for w in range(len(grid)) for d in range(DAYS)]
+    # Traversal order: Dynamic pathfinding to green squares (like the snake)
+    targets = set((w, d) for w in range(len(grid)) for d in range(DAYS) if grid[w][d] > 0)
+    import random
+    random.seed(42)
+    
+    path = [(0, 0)]
+    curr = (0, 0)
+    
+    while targets:
+        # Find closest target (Manhattan distance)
+        best_t = None
+        best_dist = 999999
+        for t in targets:
+            dist = abs(t[0]-curr[0]) + abs(t[1]-curr[1])
+            if dist < best_dist:
+                best_dist = dist
+                best_t = t
+                
+        # move step by step to best_t
+        while curr != best_t:
+            w, d = curr
+            tw, td = best_t
+            moves = []
+            if w < tw: moves.append((1, 0))
+            if w > tw: moves.append((-1, 0))
+            if d < td: moves.append((0, 1))
+            if d > td: moves.append((0, -1))
+            
+            dw, dd = random.choice(moves)
+            curr = (w+dw, d+dd)
+            path.append(curr)
+            
+        targets.remove(best_t)
+
+    # if no targets, just do a simple walk
+    if len(path) == 1:
+        path = [(w, 0) for w in range(WEEKS)]
+
     n    = len(path)
     dur  = fmt(n * FRAME_DUR)
     total_s = n * FRAME_DUR
@@ -112,28 +148,37 @@ def generate(grid):
               f'{name}</text>')
 
     # ── Cells with SMIL colour animation ────────────────────────────────────
-    pos_idx = {cell: i for i, cell in enumerate(path)}
+    pos_idx = {}
+    for i, cell in enumerate(path):
+        if cell not in pos_idx:
+            pos_idx[cell] = i
+            
     for w, col in enumerate(grid):
         for d, cnt in enumerate(col):
             x = PAD_LEFT + w*STEP
             y = HEADER_H + d*STEP
             c0 = COLORS[lv(cnt)]
             c1 = SLASHED[lv(cnt)]
-            fi = pos_idx[(w, d)] / n          # fraction when slashed
-            # 3-stop discrete: original → slashed → original (next loop)
-            kts_c = f"0;{fi:.4f};1.0000"
-            vals_c = f"{c0};{c1};{c0}"
-            a(f'<rect x="{x}" y="{y}" width="{CELL}" height="{CELL}" '
-              f'rx="2" fill="{c0}" stroke="{BORDER}" stroke-width="0.5">'
-              f'<animate attributeName="fill" calcMode="discrete" '
-              f'values="{vals_c}" keyTimes="{kts_c}" '
-              f'dur="{dur}" repeatCount="indefinite"/>'
-              f'</rect>')
+            
+            if (w, d) in pos_idx:
+                fi = pos_idx[(w, d)] / n          # fraction when slashed
+                # 3-stop discrete: original → slashed → original (next loop)
+                kts_c = f"0;{fi:.4f};1.0000"
+                vals_c = f"{c0};{c1};{c0}"
+                a(f'<rect x="{x}" y="{y}" width="{CELL}" height="{CELL}" '
+                  f'rx="2" fill="{c0}" stroke="{BORDER}" stroke-width="0.5">'
+                  f'<animate attributeName="fill" calcMode="discrete" '
+                  f'values="{vals_c}" keyTimes="{kts_c}" '
+                  f'dur="{dur}" repeatCount="indefinite"/>'
+                  f'</rect>')
+            else:
+                a(f'<rect x="{x}" y="{y}" width="{CELL}" height="{CELL}" '
+                  f'rx="2" fill="{c0}" stroke="{BORDER}" stroke-width="0.5"/>')
 
     # ── Grim Reaper (Image) ──
     # Dynamically load the image and embed it
     import base64
-    img_path = os.path.join(os.path.dirname(__file__), "..", "..", "img", "grim_reaper.png")
+    img_path = os.path.join(os.path.dirname(__file__), "..", "..", "img", "reaper_pixel.png")
     try:
         with open(img_path, "rb") as img_file:
             b64_data = base64.b64encode(img_file.read()).decode("utf-8")
