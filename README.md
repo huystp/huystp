@@ -84,12 +84,17 @@
 
 > *"Tử thần vung lưỡi hái, chém nát những khối vuông xanh của sự lười biếng!"*
 
-<div align="center">
+<div align="center" style="position:relative;display:inline-block;max-width:860px;width:100%;">
+  <img
+    src="https://raw.githubusercontent.com/huystp/huystp/output/github-contribution-grid-snake.svg"
+    alt="Contribution game board"
+    width="100%"
+    style="display:block;"
+  />
   <img
     src="img/reaper_pixel.png"
-    alt="Tử thần với lưỡi hái"
-    width="100%"
-    style="max-width:640px"
+    alt="Tử thần trong game"
+    style="position:absolute;left:55%;top:40%;width:220px;transform:translate(-50%, -50%);pointer-events:none;"
   />
 </div>
 
