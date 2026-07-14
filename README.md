@@ -86,9 +86,10 @@
 
 <div align="center">
   <img
-    src="https://raw.githubusercontent.com/huystp/huystp/output/github-contribution-grid-reaper.svg"
-    alt="Grim Reaper slashing the contribution graph"
+    src="img/reaper_pixel.png"
+    alt="Tử thần với lưỡi hái"
     width="100%"
+    style="max-width:640px"
   />
 </div>
 
