@@ -23,7 +23,48 @@
 ### 🛠️ Kỹ năng & Công nghệ
 
 <div align="center">
-  <img src="https://skillicons.dev/icons?i=java,cs,html,css,js,mysql,git,github,vscode,visualstudio" />
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-start;">
+    <div style="text-align:center;min-width:64px">
+      <img src="https://skillicons.dev/icons?i=java" width="48" alt="java" />
+      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">Java</div>
+    </div>
+    <div style="text-align:center;min-width:64px">
+      <img src="https://skillicons.dev/icons?i=cs" width="48" alt="csharp" />
+      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">C#</div>
+    </div>
+    <div style="text-align:center;min-width:64px">
+      <img src="https://skillicons.dev/icons?i=html" width="48" alt="html" />
+      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">HTML</div>
+    </div>
+    <div style="text-align:center;min-width:64px">
+      <img src="https://skillicons.dev/icons?i=css" width="48" alt="css" />
+      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">CSS</div>
+    </div>
+    <div style="text-align:center;min-width:64px">
+      <img src="https://skillicons.dev/icons?i=js" width="48" alt="javascript" />
+      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">JavaScript</div>
+    </div>
+    <div style="text-align:center;min-width:64px">
+      <img src="https://skillicons.dev/icons?i=mysql" width="48" alt="mysql" />
+      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">MySQL</div>
+    </div>
+    <div style="text-align:center;min-width:64px">
+      <img src="https://skillicons.dev/icons?i=git" width="48" alt="git" />
+      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">Git</div>
+    </div>
+    <div style="text-align:center;min-width:64px">
+      <img src="https://skillicons.dev/icons?i=github" width="48" alt="github" />
+      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">GitHub</div>
+    </div>
+    <div style="text-align:center;min-width:64px">
+      <img src="https://skillicons.dev/icons?i=vscode" width="48" alt="vscode" />
+      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">VS Code</div>
+    </div>
+    <div style="text-align:center;min-width:64px">
+      <img src="https://skillicons.dev/icons?i=visualstudio" width="48" alt="visualstudio" />
+      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">Visual Studio</div>
+    </div>
+  </div>
 </div>
 
 <br/>

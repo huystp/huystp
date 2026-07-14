@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="220" viewBox="0 0 900 220">
+  <rect width="100%" height="100%" fill="#0d1117" rx="8"/>
+  <g transform="translate(20,20)">
+    <image href="../img/reaper_pixel.png" x="0" y="0" width="180" height="270"/>
+    <text x="220" y="60" fill="#8b949e" font-family="monospace" font-size="20">Tử Thần (demo)</text>
+    <text x="220" y="90" fill="#8b949e" font-family="monospace" font-size="14">Đã phóng to; gạch chéo đã bị loại bỏ</text>
+  </g>
+</svg>

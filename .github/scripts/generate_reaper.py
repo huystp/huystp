@@ -214,12 +214,8 @@ def generate(grid):
                   f'rx="2" fill="{c0}" stroke="{BORDER}" stroke-width="0.5"/>')
 
     # Grim Reaper — pixel art drawn as SVG rects
-    # Slash flash line (green, flickers on each step)
-    flash = (f'<line x1="-{HW+4}" y1="{HH//2}" x2="{HW+4}" y2="-{HH//2}" '
-             f'stroke="#00ff77" stroke-width="2.5" stroke-linecap="round">'
-             f'<animate attributeName="opacity" values="0;1;0" '
-             f'keyTimes="0;0.07;0.4" dur="{fmt(FRAME_DUR)}" repeatCount="indefinite"/>'
-             f'</line>')
+    # Slash flash line removed (user requested no green diagonal)
+    flash = ''
 
     # Eye glow pulse (on top of sprite)
     glow = ('<circle cx="0" cy="-10" r="3" fill="#ff2200" opacity="0">'
@@ -227,14 +223,23 @@ def generate(grid):
             'dur="0.8s" repeatCount="indefinite"/>'
             '</circle>')
 
+    # Build reaper group with scaling and a small "bobbing" animation (chép xuống)
+    # Outer <g> handles translation along the path (unchanged)
+    # Inner groups scale the sprite up and apply a gentle translate animation
+    scale_factor = 1.8
     reaper_g = (
         '<g>\n'
         f'<animateTransform attributeName="transform" type="translate" '
         f'calcMode="discrete" values="{";".join(pos_v)}" '
         f'keyTimes="{";".join(kts)}" dur="{dur}" repeatCount="indefinite"/>\n'
+        f'  <g transform="scale({scale_factor})">\n'
+        f'    <g>\n'
         + sprite_svg() + '\n'
-        + flash + '\n'
         + glow + '\n'
+        '      <animateTransform attributeName="transform" type="translate" '
+        'values="0 0; 0 6; 0 0" dur="0.8s" repeatCount="indefinite"/>'
+        '    </g>\n'
+        '  </g>\n'
         '</g>'
     )
     a(reaper_g)
