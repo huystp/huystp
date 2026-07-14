@@ -23,49 +23,50 @@
 ### 🛠️ Kỹ năng & Công nghệ
 
 <div align="center">
-</div>
-  <div style="display:flex;flex-direction:row;gap:18px;justify-content:center;flex-wrap:wrap;align-items:center;">
-    <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;min-width:64px">
-      <img src="https://skillicons.dev/icons?i=java" width="48" alt="java" />
-      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">Java</div>
-    </div>
-    <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;min-width:64px">
-      <img src="https://skillicons.dev/icons?i=cs" width="48" alt="csharp" />
-      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">C#</div>
-    </div>
-    <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;min-width:64px">
-      <img src="https://skillicons.dev/icons?i=html" width="48" alt="html" />
-      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">HTML</div>
-    </div>
-    <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;min-width:64px">
-      <img src="https://skillicons.dev/icons?i=css" width="48" alt="css" />
-      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">CSS</div>
-    </div>
-    <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;min-width:64px">
-      <img src="https://skillicons.dev/icons?i=js" width="48" alt="javascript" />
-      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">JavaScript</div>
-    </div>
-    <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;min-width:64px">
-      <img src="https://skillicons.dev/icons?i=mysql" width="48" alt="mysql" />
-      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">MySQL</div>
-    </div>
-    <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;min-width:64px">
-      <img src="https://skillicons.dev/icons?i=git" width="48" alt="git" />
-      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">Git</div>
-    </div>
-    <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;min-width:64px">
-      <img src="https://skillicons.dev/icons?i=github" width="48" alt="github" />
-      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">GitHub</div>
-    </div>
-    <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;min-width:64px">
-      <img src="https://skillicons.dev/icons?i=vscode" width="48" alt="vscode" />
-      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">VS Code</div>
-    </div>
-    <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;min-width:64px">
-      <img src="https://skillicons.dev/icons?i=visualstudio" width="48" alt="visualstudio" />
-      <div style="font-size:12px;color:#9aa4b2;margin-top:6px">Visual Studio</div>
-    </div>
-  </div>
+  <table style="border-collapse:collapse;display:inline-table">
+    <tr>
+      <td align="center" style="padding:8px;vertical-align:top">
+        <img src="https://skillicons.dev/icons?i=java" width="56" alt="java" />
+        <div style="font-size:12px;color:#9aa4b2;margin-top:6px">Java</div>
+      </td>
+      <td align="center" style="padding:8px;vertical-align:top">
+        <img src="https://skillicons.dev/icons?i=cs" width="56" alt="csharp" />
+        <div style="font-size:12px;color:#9aa4b2;margin-top:6px">C#</div>
+      </td>
+      <td align="center" style="padding:8px;vertical-align:top">
+        <img src="https://skillicons.dev/icons?i=html" width="56" alt="html" />
+        <div style="font-size:12px;color:#9aa4b2;margin-top:6px">HTML</div>
+      </td>
+      <td align="center" style="padding:8px;vertical-align:top">
+        <img src="https://skillicons.dev/icons?i=css" width="56" alt="css" />
+        <div style="font-size:12px;color:#9aa4b2;margin-top:6px">CSS</div>
+      </td>
+      <td align="center" style="padding:8px;vertical-align:top">
+        <img src="https://skillicons.dev/icons?i=js" width="56" alt="javascript" />
+        <div style="font-size:12px;color:#9aa4b2;margin-top:6px">JavaScript</div>
+      </td>
+      <td align="center" style="padding:8px;vertical-align:top">
+        <img src="https://skillicons.dev/icons?i=mysql" width="56" alt="mysql" />
+        <div style="font-size:12px;color:#9aa4b2;margin-top:6px">MySQL</div>
+      </td>
+      <td align="center" style="padding:8px;vertical-align:top">
+        <img src="https://skillicons.dev/icons?i=git" width="56" alt="git" />
+        <div style="font-size:12px;color:#9aa4b2;margin-top:6px">Git</div>
+      </td>
+      <td align="center" style="padding:8px;vertical-align:top">
+        <img src="https://skillicons.dev/icons?i=github" width="56" alt="github" />
+        <div style="font-size:12px;color:#9aa4b2;margin-top:6px">GitHub</div>
+      </td>
+      <td align="center" style="padding:8px;vertical-align:top">
+        <img src="https://skillicons.dev/icons?i=vscode" width="56" alt="vscode" />
+        <div style="font-size:12px;color:#9aa4b2;margin-top:6px">VS Code</div>
+      </td>
+      <td align="center" style="padding:8px;vertical-align:top">
+        <img src="https://skillicons.dev/icons?i=visualstudio" width="56" alt="visualstudio" />
+        <div style="font-size:12px;color:#9aa4b2;margin-top:6px">Visual Studio</div>
+      </td>
+    </tr>
+  </table>
 </div>
 
 <br/>
